@@ -6,7 +6,42 @@ from getch import getch
 from blinkt import set_pixel, set_brightness, show, clear, set_all
 
 def win(mapy, y, x):
-    ...
+    # horizontal
+    tr = True, tl = True
+    r = 0, l = 0
+    for in range(3):
+        if mapy[y][x + 1] == mapy[y][x] and tr:
+            r += 1
+        else:
+            tr = False
+        if mapy[y][x - 1] == mapy[y][x] and tl:
+            l += 1
+        else:
+            tl = False
+    # vertcal
+    tt = True, tb = True
+    t = 0, b = 0
+    for in range(3):
+        if mapy[y + 1][x] == mapy[y][x] and tt:
+            t += 1
+        else:
+            tt = False
+        if mapy[y - 1][x] == mapy[y][x] and tb:
+            b += 1
+        else:
+            tb = False
+    # dep
+    ttl = True, tbr = True
+    tl = 0, br = 0
+    for in range(3):
+        if mapy[y + 1][x] == mapy[y][x] and tt:
+            t += 1
+        else:
+            tt = False
+        if mapy[y - 1][x] == mapy[y][x] and tb:
+            b += 1
+        else:
+            tb = False
 
 def printmap(mapy, p1, p2, turn, index):
     cmd('clear')
