@@ -6,47 +6,90 @@ from getch import getch
 from blinkt import set_pixel, set_brightness, show, clear, set_all
 
 def win(mapy, y, x):
-    # horizontal
-    tr = True, tl = True
-    r = 0, l = 0
-    for in range(3):
-        if mapy[y][x + 1] == mapy[y][x] and tr:
-            r += 1
+    b1, b2, b3, b4, b5, b6, b7, b8 = True, True, True, True, True, True, True, True
+    t1, t2, t3, t4 = 1, 1, 1, 1
+    
+    for i in range(1, 4):
+        if x + i < len(mapy[0]) and y + i < len(mapy) and b1:
+            # /
+            if mapy[y+i][x+i] == mapy[y][x]:
+                t1 += 1
+            else: 
+                b1 = False
         else:
-            tr = False
-        if mapy[y][x - 1] == mapy[y][x] and tl:
-            l += 1
+            b1 = False
+        
+        if x - i >= 0 and y - i >= 0 and b2:
+            # /
+            if mapy[y-i][x-i] == mapy[y][x]:
+                t1 += 1
+            else:
+                b2 = False
         else:
-            tl = False
-    # vertcal
-    tt = True, tb = True
-    t = 0, b = 0
-    for in range(3):
-        if mapy[y + 1][x] == mapy[y][x] and tt:
-            t += 1
+            b2 = False
+
+        if x + i < len(mapy[0]) and y - i >= 0 and b3:
+            # \
+            if mapy[y-i][x+i] == mapy[y][x]:
+                t2 += 1
+            else:
+                b3 = False
         else:
-            tt = False
-        if mapy[y - 1][x] == mapy[y][x] and tb:
-            b += 1
+            b3 = False
+        if x - i >= 0 and y + i < len(mapy) and b4:
+            # \
+            if mapy[y+i][x-i] == mapy[y][x]:
+                t2 += 1
+            else:
+                b4 = False
         else:
-            tb = False
-    # dep
-    ttl = True, tbr = True
-    tl = 0, br = 0
-    for in range(3):
-        if mapy[y + 1][x] == mapy[y][x] and tt:
-            t += 1
+            b4 = False
+
+        if x - i >= 0 and b5:
+            # -
+            if mapy[y][x-i] == mapy[y][x]:
+                t3 += 1
+            else:
+                b5 = False
         else:
-            tt = False
-        if mapy[y - 1][x] == mapy[y][x] and tb:
-            b += 1
+            b5 = False
+        if x + i < len(mapy[0]) and b6:
+            # -
+            if mapy[y][x+i] == mapy[y][x]:
+                t3 += 1
+            else:
+                b6 = False
         else:
-            tb = False
+            b6 = False
+
+        if y - i >= 0 and b7:
+            # |
+            if mapy[y-i][x] == mapy[y][x]:
+                t4 += 1
+            else:
+                b7 = False
+        else:
+            b7 = False
+        if y + i < len(mapy) and b8:
+            # |
+            if mapy[y+i][x] == mapy[y][x]:
+                t4 += 1
+            else:
+                b8 = False
+        else:
+            b8 = False
+
+    if t1 >= 4 or t2 >= 4 or t3 >= 4 or t4 >= 4:
+        return True
+    return False
 
 def printmap(mapy, p1, p2, turn, index):
     cmd('clear')
     print('')
     print('\t', end='')
+
+    end = False
+
     if turn:
         print(index*'    ', end='')
         print(f'{p1[0]}{p1[1]}███')
@@ -74,19 +117,17 @@ def printmap(mapy, p1, p2, turn, index):
         for i in range(8)[::-1]:
             if mapy[i][index] == 0:
                 if turn:
-                    mapy[i][index] = 1;
+                    mapy[i][index] = 1
+                    end = win(mapy, i, index)
                     index = -1
-                    if win(mapy, i, index):
-                        ...
                     break
                 else:
-                    mapy[i][index] = 2;
+                    mapy[i][index] = 2
+                    end = win(mapy, i, index)
                     index = -1
-                    if win(mapy, i, index):
-                        ...
                     break
         
-    return index, mapy 
+    return index, mapy, end
     
 def printmenu(sel, i1, i2):
     cmd('clear')
@@ -183,11 +224,21 @@ def play():
     
     cmd('clear')
     index = 0
-    end = False
-    while not end:
-        index, game = printmap(game, [colors[p1], backs[p1]], [colors[p2], backs[p2]], turn, index)
+    while 1:
+        index, game, end = printmap(game, [colors[p1], backs[p1]], [colors[p2], backs[p2]], turn, index)
+        if end:
+            cmd('clear')
+
+            if turn:
+                print('player 1 won')
+            else:
+                print('player 2 won')
+
+            getch()
+            break
         if index == -1:
             turn = not turn
             index = 0
+        
     
     cmd('clear')
